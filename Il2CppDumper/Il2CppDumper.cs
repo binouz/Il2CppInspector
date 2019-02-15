@@ -19,12 +19,15 @@ namespace Il2CppInspector
         model = new Il2CppReflector(proc);
       }
 
-      public void WriteFiles(string outDir) {
+      public void WriteFiles(string outDir, string filter) {
         foreach (var asm in model.Assemblies) {
           string path = Path.Combine(outDir, $"{asm.FullName}.cs");
           using (var writer = new StreamWriter(new FileStream(path, FileMode.Create), Encoding.UTF8)) {
             writer.Write($"// Image {asm.Index}: {asm.FullName} - {asm.Definition.typeStart}\n");
             foreach (var type in asm.DefinedTypes) {
+              if (filter != null && !type.Namespace.Contains(filter))
+                continue;
+
               // Type declaration
               writer.Write($"\n// Namespace: {type.Namespace}\n");
 
